@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 import os
 import argparse
+import datetime
 import threading
 import queue
+import json
 import win32file
 import win32con
 import pywintypes
@@ -35,6 +37,10 @@ def changeFileCreationTime(fname, newtime):
     win32file.SetFileTime(winfile, wintime, None, None)
 
     winfile.close()
+
+
+def get_meta(fn: str) -> str:
+    return ''
 
 
 def get_meta_filename(fn: str) -> Optional[str]:
@@ -81,7 +87,7 @@ def tree_file(src: str):
         shared.put(pair)
 
 
-def work():
+def work(dest: str):
     t: threading.Thread = threading.current_thread()
 
     while alive:
@@ -101,17 +107,17 @@ def work():
 if __name__ == '__main__':
     args = parser.parse_args()
     src = args.src
-    dest = args.dest
+    dest_ = args.dest
 
     if not os.path.isdir(src):
         raise ValueError(f"Source folder `{src}` does not exist or not a directory.")
 
-    if not os.path.exists(dest):
-        os.mkdir(dest)
-    elif not os.path.isdir(dest):
-        raise ValueError(f"Destination folder `{dest}` appeared and is not a directory.")
+    if not os.path.exists(dest_):
+        os.mkdir(dest_)
+    elif not os.path.isdir(dest_):
+        raise ValueError(f"Destination folder `{dest_}` appeared and is not a directory.")
 
-    work_thead = threading.Thread(name='Worker', target=work)
+    work_thead = threading.Thread(name='Worker', target=work, args=(dest_, ))
     work_thead.start()
 
     tree_file(src)
