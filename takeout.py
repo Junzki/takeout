@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 import os
+import sys
+import re
 import argparse
 import datetime
 import threading
@@ -8,11 +10,13 @@ import json
 import win32file
 import win32con
 import pywintypes
+import pytz
 from typing import Optional
 
 WATCHED_EXTS = (
     'png',
-    'jpg'
+    'jpg',
+    'heic'
 )
 META_EXT = 'json'
 EDITED_TAILOR = '-edited'
@@ -21,6 +25,8 @@ EDITED_TAILOR = '-edited'
 parser = argparse.ArgumentParser()
 parser.add_argument('src', help='Source folder.')
 parser.add_argument('dest', help='Destination folder.')
+
+DATE_PATTERN = re.compile(r'(?P<year>\d{4})\-\d{2}\-\d{2}')
 
 shared: queue.Queue = queue.Queue()
 alive = True
@@ -39,8 +45,27 @@ def changeFileCreationTime(fname, newtime):
     winfile.close()
 
 
-def get_meta(fn: str) -> str:
-    return ''
+def get_meta(fn: str) -> (str, datetime.datetime):
+    with open(fn, 'r') as f:
+        content = json.load(f)
+
+    creation_time = content.get('photoTakenTime')
+    if not creation_time:
+        creation_time = content['creationTime']
+
+    ts = int(creation_time['timestamp'])
+    dt = datetime.datetime.fromtimestamp(ts).replace(tzinfo=pytz.UTC)
+    year = dt.year
+
+    return str(year), dt
+
+
+def time_from_path(fn: str) -> (str, datetime.datetime):
+    m = DATE_PATTERN.search(fn)
+    dt = m.group()
+
+    dt = datetime.datetime.strptime(dt, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=pytz.UTC)
+    return str(dt.year), dt
 
 
 def get_meta_filename(fn: str) -> Optional[str]:
@@ -79,6 +104,10 @@ def tree_file(src: str):
 
         meta_fn = get_meta_filename(f)
 
+        # TODO:
+        # It seems files with tailor `-edited` are ignored unexpectly, and
+        # the original images are copied twice (which creates a duplicated file to be removed).
+        # Fix it in the near future.
         pair = (
             f,
             meta_fn if meta_fn else None
@@ -87,21 +116,49 @@ def tree_file(src: str):
         shared.put(pair)
 
 
+def copy_file(dest: str,
+              fn: str,
+              year: str,
+              created_at: datetime.datetime):
+    dirname = os.path.join(dest, year)
+    if not os.path.isdir(dirname):
+        os.mkdir(dirname)
+
+    _, name = os.path.split(fn)
+
+    target = os.path.join(dirname, name)
+    win32file.CopyFile(fn, target, False)
+    changeFileCreationTime(target, created_at)
+
+
 def work(dest: str):
     t: threading.Thread = threading.current_thread()
+    ok = False
 
-    while alive:
+    while alive or ok:
         try:
             v = shared.get(block=True, timeout=3)
         except queue.Empty:
+            ok = False
             continue
 
         if not v:
+            ok = False
             continue
 
+        ok = True
         fn, meta_fn = v
         print(f'[{t.name}] File: {fn}')
         print(f'[{t.name}] Meta: {meta_fn}')
+
+        if meta_fn:
+            year, created_at = get_meta(meta_fn)
+        else:
+            year, created_at = time_from_path(fn)
+
+        copy_file(dest, fn, year, created_at)
+        if meta_fn:
+            copy_file(dest, meta_fn, year, created_at)
 
 
 if __name__ == '__main__':
