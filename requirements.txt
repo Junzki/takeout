@@ -1,4 +1,2 @@
-ipython
 pytz
 pywin32~=228
-tinydb~=4.1.1
