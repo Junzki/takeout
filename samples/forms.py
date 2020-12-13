@@ -7,9 +7,15 @@ from .crypto import hash_buf
 from .models import Sample
 
 
+class ImageInputWidget(forms.FileInput):
+    template_name = 'samples/file.html'
+
+
 class SampleForm(forms.ModelForm):
     FIELD_NAME_SAMPLE_FILE = 'sample_file'
     FIELD_NAME_SAMPLE_HASH = 'sample_hash'
+
+    # sample_file = forms.ImageField(widget=ImageInputWidget)
     
     def save(self, commit=True):
         file_: Optional[File] = self.instance.sample_file
@@ -40,3 +46,6 @@ class SampleForm(forms.ModelForm):
     class Meta:
         model = Sample
         fields = '__all__'
+        # widgets = {
+        #     'sample_file': ImageInputWidget(),
+        # }

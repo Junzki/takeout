@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from .models import Identity, Sample
 from .forms import SampleForm
-from .crypto import hash_buf
 
 
 class IdentityAdmin(admin.ModelAdmin):
@@ -11,6 +9,7 @@ class IdentityAdmin(admin.ModelAdmin):
 
 class SampleAdmin(admin.ModelAdmin):
     form = SampleForm
+    list_display = ('identity', 'alias_name', 'sample_file', 'updated_at')
 
 
 admin.site.register(Identity, IdentityAdmin)

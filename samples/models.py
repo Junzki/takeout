@@ -22,8 +22,8 @@ class Sample(models.Model):
     alias_name = models.CharField(max_length=255, null=False, blank=True, default='', verbose_name='Alias Name')
     sample_value = models.BinaryField(null=True, verbose_name='Sample Value')
 
-    sample_file = models.FileField(upload_to=settings.SAMPLE_UPLOAD_PATH, null=True, default=None,
-                                   verbose_name='Sample File')
+    sample_file = models.ImageField(upload_to=settings.SAMPLE_UPLOAD_PATH, null=True, default=None,
+                                    verbose_name='Sample File')
     sample_hash = models.CharField(max_length=128, null=True, blank=False, default=None,
                                    verbose_name='Sample File HMAC-SHA256')
     primary = models.BooleanField(default=False, null=False, verbose_name='Is Primary Sample')
