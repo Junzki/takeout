@@ -20,10 +20,7 @@ parts/
 sdist/
 var/
 wheels/
-<<<<<<< HEAD
-=======
 pip-wheel-metadata/
->>>>>>> e6b8345d306d3ab9c2e9f12dc106fc034de7b8b8
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -76,10 +73,7 @@ instance/
 docs/_build/
 
 # PyBuilder
-<<<<<<< HEAD
 .pybuilder/
-=======
->>>>>>> e6b8345d306d3ab9c2e9f12dc106fc034de7b8b8
 target/
 
 # Jupyter Notebook
@@ -153,3 +147,4 @@ cython_debug/
 *.pyproj
 .DS_Store
 local.d/
+static/

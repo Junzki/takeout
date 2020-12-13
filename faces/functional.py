@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 import copy
 import cv2
+import math
 import numpy as np
 import face_recognition
 from typing import List, Tuple
@@ -31,7 +32,6 @@ def draw_mark(image, face_locations, face_names):
         cv2.putText(copied, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
     return copied
-
 
 
 def crop_face(image) -> List[Tuple[np.array, np.array]]:
