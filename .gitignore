@@ -148,3 +148,4 @@ cython_debug/
 .DS_Store
 local.d/
 static/
+settings/local.py
