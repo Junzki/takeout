@@ -1,4 +1,5 @@
 django
+djangorestframework
 face-recognition~=1.3.0
 ipython
 opencv-python~=4.4
