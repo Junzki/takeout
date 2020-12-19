@@ -1,0 +1,15 @@
+{% if widget.is_initial %}
+<p class="file-upload">
+    <span class="file-upload-initial-text">{{ widget.initial_text }}: </span>
+    <img class="sample-avatar-image" src="{{ widget.value.url }}" alt="{{ widget.value }}" />
+    {% if not widget.required %}
+        <span class="clearable-file-input">
+        <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"{% if widget.attrs.disabled %} disabled{% endif %}>
+        <label for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label></span>
+    {% endif %}<br>
+    <span class="file-upload-initial-text">{{ widget.input_text }}:</span>
+{% endif %}
+
+<input type="{{ widget.type }}" name="{{ widget.name }}"{% include "django/forms/widgets/attrs.html" %}>
+
+{% if widget.is_initial %}</p>{% endif %}
