@@ -46,4 +46,8 @@ class SampleForm(forms.ModelForm):
 
     class Meta:
         model = Sample
-        fields = '__all__'
+        fields = [
+            'sample_file',
+            'sample_hash',
+            'primary'
+        ]

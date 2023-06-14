@@ -17,9 +17,19 @@ class Identity(models.Model):
         return f'Identity {self.alias_name} - {self.key}'
 
 
+class ImageInput(models.Model):
+    image = models.ImageField(upload_to=settings.IMAGE_UPLOAD_PATH, null=True, default=None,
+                                    verbose_name='Input File')
+    image_hash = models.CharField(max_length=128, null=True, blank=False, default=None,
+                                  verbose_name='Sample File HMAC-SHA256')
+
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created At')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated At')
+
+
 class Sample(models.Model):
-    identity = models.CharField(max_length=255, null=False, blank=False, verbose_name='Identity Key')
-    alias_name = models.CharField(max_length=255, null=False, blank=True, default='', verbose_name='Alias Name')
+    identity = models.CharField(max_length=255, null=False, blank=False, default=build_identity,
+                                verbose_name='Identity Key')
     sample_value = models.BinaryField(null=True, verbose_name='Sample Value')
 
     sample_file = models.ImageField(upload_to=settings.SAMPLE_UPLOAD_PATH, null=True, default=None,

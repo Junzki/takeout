@@ -2,6 +2,8 @@ django
 djangorestframework
 face-recognition~=1.3.0
 ipython
+numpy==1.24.3
 opencv-python~=4.4
+Pillow==9.5.0
 psycopg2-binary~=2.8
 PyYAML~=5.3

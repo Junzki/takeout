@@ -12,7 +12,7 @@ class IdentityAdmin(admin.ModelAdmin):
 
 class SampleAdmin(admin.ModelAdmin):
     form = SampleForm
-    list_display = ('identity', 'alias_name', 'avatar_image', 'updated_at')
+    list_display = ('identity', 'avatar_image', 'updated_at')
 
     def avatar_image(self, obj: Sample):
         if not obj.sample_file:
